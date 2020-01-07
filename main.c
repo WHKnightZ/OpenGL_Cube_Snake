@@ -1,6 +1,6 @@
-#include <stdio.h>
 #include <GL/freeglut.h>
 #include <GL/glext.h>
+#include <stdio.h>
 
 #define POS_X 420
 #define POS_Y 160
@@ -40,8 +40,8 @@ typedef struct s_Face {
     int f, d;
 } s_Face;
 
-typedef struct Snake_Part{
-    float x,y,z;
+typedef struct Snake_Part {
+    float x, y, z;
     int V, Drt;
 } Snake_Part;
 
@@ -70,7 +70,7 @@ int Map[20][20][20]; // x y z
 
 Snake_Part Snake_Pos[MAX_SNAKE_LENGTH];
 int Snake_Length, Snake_Offset;
-int Pressed_Arrow=-1;
+int Pressed_Arrow = -1;
 
 void Switch_Up() {
     Face_Next = Face_Bottom;
@@ -121,50 +121,52 @@ void Switch_Left() {
 }
 
 void Switch() {
-	if (Time_Rotate==MAX_TIME_ROTATE){
-		Time_Rotate = 0;
-	    Snake_Pos[0].V = New_V;
-	    Snake_Pos[0].Drt = New_Drt;
-	    Switch_Func[Key_Current]();	
-	}
+    if (Time_Rotate == MAX_TIME_ROTATE) {
+        Time_Rotate = 0;
+        Snake_Pos[0].V = New_V;
+        Snake_Pos[0].Drt = New_Drt;
+        Switch_Func[Key_Current]();
+    }
     //Velocity /= SLOW_VELOCITY_INDEX;
 }
 
 void Move_X(int Drt) {
-	Snake_Pos[0].x+=Snake_Pos[0].Drt;
-	if (Time_Rotate==MAX_TIME_ROTATE){
-    if (Drt == -1) {
-        if (Snake_Pos[0].x < -9.45f)
-            Switch();
-    } else {
-        if (Snake_Pos[0].x > 9.45f)
-            Switch();
-    }}
+    Snake_Pos[0].x += Snake_Pos[0].Drt;
+    if (Time_Rotate == MAX_TIME_ROTATE) {
+        if (Drt == -1) {
+            if (Snake_Pos[0].x < -9.45f)
+                Switch();
+        } else {
+            if (Snake_Pos[0].x > 9.45f)
+                Switch();
+        }
+    }
 }
 
 void Move_Y(int Drt) {
-    Snake_Pos[0].y+=Snake_Pos[0].Drt;
-    if (Time_Rotate==MAX_TIME_ROTATE){
-    if (Drt == -1) {
-        if (Snake_Pos[0].y < -9.45f)
-            Switch();
-    } else {
-        if (Snake_Pos[0].y > 9.45f)
-            Switch();
-    }}
+    Snake_Pos[0].y += Snake_Pos[0].Drt;
+    if (Time_Rotate == MAX_TIME_ROTATE) {
+        if (Drt == -1) {
+            if (Snake_Pos[0].y < -9.45f)
+                Switch();
+        } else {
+            if (Snake_Pos[0].y > 9.45f)
+                Switch();
+        }
+    }
 }
 
 void Move_Z(int Drt) {
-    Snake_Pos[0].z+=Snake_Pos[0].Drt;
-    if (Time_Rotate==MAX_TIME_ROTATE){
-    if (Drt == -1) {
-        if (Snake_Pos[0].z < -9.45f)
-            Switch();
-    } else {
-        if (Snake_Pos[0].z > 9.45f)
-            Switch();
+    Snake_Pos[0].z += Snake_Pos[0].Drt;
+    if (Time_Rotate == MAX_TIME_ROTATE) {
+        if (Drt == -1) {
+            if (Snake_Pos[0].z < -9.45f)
+                Switch();
+        } else {
+            if (Snake_Pos[0].z > 9.45f)
+                Switch();
+        }
     }
-}
 }
 
 void Set_Offset_x_y() {
@@ -180,7 +182,7 @@ void Set_Offset_x_z() {
     yo = ROTATE_OFFSET * Face[Face_Current].d * Face[Face_Next].d;
     xo = zo = 0.0f;
     Snake_Pos[0].V = 2;
-    Snake_Pos[0].Drt= Face[Face_Next].d;
+    Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 0;
     New_Drt = -Face[Face_Current].d;
     printf("a");
@@ -189,7 +191,7 @@ void Set_Offset_x_z() {
 void Set_Offset_y_x() {
     zo = ROTATE_OFFSET * Face[Face_Current].d * Face[Face_Next].d;
     xo = yo = 0.0f;
-    Snake_Pos[0].V= 0;
+    Snake_Pos[0].V = 0;
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 1;
     New_Drt = -Face[Face_Current].d;
@@ -217,32 +219,32 @@ void Set_Offset_z_x() {
 void Set_Offset_z_y() {
     xo = ROTATE_OFFSET * Face[Face_Current].d * Face[Face_Next].d;
     yo = zo = 0.0f;
-    Snake_Pos[0].V= 1;
+    Snake_Pos[0].V = 1;
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 2;
     New_Drt = -Face[Face_Current].d;
 }
 
-void Arrow_Up(){
-	Key_Current = KEY_UP;
+void Arrow_Up() {
+    Key_Current = KEY_UP;
     Face_Next = Face_Top;
     Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
 }
 
-void Arrow_Right(){
-	Key_Current = KEY_RIGHT;
+void Arrow_Right() {
+    Key_Current = KEY_RIGHT;
     Face_Next = Face_Right;
     Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
 }
 
-void Arrow_Down(){
-	Key_Current = KEY_DOWN;
+void Arrow_Down() {
+    Key_Current = KEY_DOWN;
     Face_Next = Face_Bottom;
     Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
 }
 
-void Arrow_Left(){
-	Key_Current = KEY_LEFT;
+void Arrow_Left() {
+    Key_Current = KEY_LEFT;
     Face_Next = Face_Left;
     Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
 }
@@ -294,15 +296,15 @@ void Init_Game() {
     glClearColor(BG_Color[0], BG_Color[1], BG_Color[2], BG_Color[3]);
     glColor3f(1.0f, 1.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    
+
     glEnable(GL_POINT_SMOOTH);
-	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-	glEnable(GL_LINE_SMOOTH);
-	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	glEnable(GL_POLYGON_SMOOTH);
-	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_POLYGON_SMOOTH);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glShadeModel(GL_POLYGON_SMOOTH);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Game
@@ -347,27 +349,27 @@ void Init_Game() {
     Set_Offset_Func[1][2] = Set_Offset_y_z;
     Set_Offset_Func[2][0] = Set_Offset_z_x;
     Set_Offset_Func[2][1] = Set_Offset_z_y;
-    Arrow_Func[KEY_UP]=Arrow_Up;
-    Arrow_Func[KEY_RIGHT]=Arrow_Right;
-    Arrow_Func[KEY_DOWN]=Arrow_Down;
-    Arrow_Func[KEY_LEFT]=Arrow_Left;
+    Arrow_Func[KEY_UP] = Arrow_Up;
+    Arrow_Func[KEY_RIGHT] = Arrow_Right;
+    Arrow_Func[KEY_DOWN] = Arrow_Down;
+    Arrow_Func[KEY_LEFT] = Arrow_Left;
     Load_Map();
-    Snake_Offset=0;
-    Snake_Length=6;
-    Snake_Pos[0].x=0.5f;
-    Snake_Pos[1].x=-0.5f;
-    Snake_Pos[2].x=-1.5f;
-    Snake_Pos[3].x=-2.5f;
-    Snake_Pos[4].x=-3.5f;
-    Snake_Pos[5].x=-4.5f;
-    Snake_Pos[6].x=-5.5f;
+    Snake_Offset = 0;
+    Snake_Length = 6;
+    Snake_Pos[0].x = 0.5f;
+    Snake_Pos[1].x = -0.5f;
+    Snake_Pos[2].x = -1.5f;
+    Snake_Pos[3].x = -2.5f;
+    Snake_Pos[4].x = -3.5f;
+    Snake_Pos[5].x = -4.5f;
+    Snake_Pos[6].x = -5.5f;
     int i;
-    for (i=0;i<7;i++){
-    	Snake_Pos[i].y=0.5f;
-    	Snake_Pos[i].z=9.5f;
-    	Snake_Pos[i].V=0;
-    	Snake_Pos[i].Drt=1;
-	}
+    for (i = 0; i < 7; i++) {
+        Snake_Pos[i].y = 0.5f;
+        Snake_Pos[i].z = 9.5f;
+        Snake_Pos[i].V = 0;
+        Snake_Pos[i].Drt = 1;
+    }
     Face_Current = Face_Front;
     Face_Next = Face_Right;
     Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
@@ -439,33 +441,33 @@ void Draw_Face_Back() {
             }
 }
 
-void Translate_Offset(Snake_Part *s){
-	glLoadIdentity();
-	switch(s->V){
-		case 0:
-			glTranslatef(s->x+s->Drt*0.25f*Snake_Offset,s->y,s->z);
-			break;
-		case 1:
-			glTranslatef(s->x,s->y+s->Drt*0.25f*Snake_Offset,s->z);
-			break;
-		case 2:
-			glTranslatef(s->x,s->y,s->z+s->Drt*0.25f*Snake_Offset);
-			break;
-	}
+void Translate_Offset(Snake_Part *s) {
+    glLoadIdentity();
+    switch (s->V) {
+    case 0:
+        glTranslatef(s->x + s->Drt * 0.25f * Snake_Offset, s->y, s->z);
+        break;
+    case 1:
+        glTranslatef(s->x, s->y + s->Drt * 0.25f * Snake_Offset, s->z);
+        break;
+    case 2:
+        glTranslatef(s->x, s->y, s->z + s->Drt * 0.25f * Snake_Offset);
+        break;
+    }
 }
 
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    int i,j;
-//    for (i=1;i<19;i++){
-//    	glBegin(GL_LINES);
-//    	glVertex3f(-9.0f,i-9.0f,9.1f);
-//    	glVertex3f(9.0f,i-9.0f,9.1f);
-//    	glVertex3f(i-9.0f,-9.0f,9.1f);
-//    	glVertex3f(i-9.0f,9.0f,9.1f);
-//    	glEnd();
-//	}
+    int i, j;
+    //    for (i=1;i<19;i++){
+    //    	glBegin(GL_LINES);
+    //    	glVertex3f(-9.0f,i-9.0f,9.1f);
+    //    	glVertex3f(9.0f,i-9.0f,9.1f);
+    //    	glVertex3f(i-9.0f,-9.0f,9.1f);
+    //    	glVertex3f(i-9.0f,9.0f,9.1f);
+    //    	glEnd();
+    //	}
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Cube);
     glutSolidCube(18.0);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Wall);
@@ -476,17 +478,17 @@ void Display() {
     Draw_Face_Bottom();
     Draw_Face_Back();
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake);
-    for (i=0;i<Snake_Length;i++){
-    	glLoadIdentity();
-    	glTranslatef(Snake_Pos[i].x, Snake_Pos[i].y, Snake_Pos[i].z);
-    	glutSolidCube(1.0);
-	}
-	if (Snake_Length>0){
-		Translate_Offset(&Snake_Pos[Snake_Length]);
-    	glutSolidCube(1.0);
-	}
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake_Head);
-	Translate_Offset(&Snake_Pos[0]);
+    for (i = 0; i < Snake_Length; i++) {
+        glLoadIdentity();
+        glTranslatef(Snake_Pos[i].x, Snake_Pos[i].y, Snake_Pos[i].z);
+        glutSolidCube(1.0);
+    }
+    if (Snake_Length > 0) {
+        Translate_Offset(&Snake_Pos[Snake_Length]);
+        glutSolidCube(1.0);
+    }
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake_Head);
+    Translate_Offset(&Snake_Pos[0]);
     glutSolidCube(1.2);
     glutSwapBuffers();
 }
@@ -497,44 +499,44 @@ void Resize(int x, int y) {
 }
 
 void Special(int key, int x, int y) {
-    if (Time_Rotate==MAX_TIME_ROTATE)
-	    switch (key) {
-	    case GLUT_KEY_UP:
-	        	Pressed_Arrow=KEY_UP;
-	        break;
-	    case GLUT_KEY_RIGHT:
-	        	Pressed_Arrow=KEY_RIGHT;
-	        break;
-	    case GLUT_KEY_DOWN:
-	        	Pressed_Arrow=KEY_DOWN;
-	        break;
-	    case GLUT_KEY_LEFT:
-	        	Pressed_Arrow=KEY_LEFT;
-	        break;
-	    }
+    if (Time_Rotate == MAX_TIME_ROTATE)
+        switch (key) {
+        case GLUT_KEY_UP:
+            Pressed_Arrow = KEY_UP;
+            break;
+        case GLUT_KEY_RIGHT:
+            Pressed_Arrow = KEY_RIGHT;
+            break;
+        case GLUT_KEY_DOWN:
+            Pressed_Arrow = KEY_DOWN;
+            break;
+        case GLUT_KEY_LEFT:
+            Pressed_Arrow = KEY_LEFT;
+            break;
+        }
 }
 
 void Timer(int value) {
     if (Time_Rotate < MAX_TIME_ROTATE) {
-		Reset_View();
+        Reset_View();
         Time_Rotate++;
         if (Time_Rotate == MAX_TIME_ROTATE) {
             //Velocity *= SLOW_VELOCITY_INDEX;
         }
     }
     Snake_Offset++;
-    if (Snake_Offset==4){
-    	Snake_Offset=0;
-    	int i;
-    	for (i=Snake_Length;i>0;i--){
-    		Snake_Pos[i]=Snake_Pos[i-1];
-		}
-		Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
-		if (Pressed_Arrow!=-1){
-    		Arrow_Func[Pressed_Arrow]();
-    		Pressed_Arrow=-1;
-		}
-	}
+    if (Snake_Offset == 4) {
+        Snake_Offset = 0;
+        int i;
+        for (i = Snake_Length; i > 0; i--) {
+            Snake_Pos[i] = Snake_Pos[i - 1];
+        }
+        Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
+        if (Pressed_Arrow != -1) {
+            Arrow_Func[Pressed_Arrow]();
+            Pressed_Arrow = -1;
+        }
+    }
     glutPostRedisplay();
     glutTimerFunc(INTERVAL, Timer, 0);
 }
@@ -544,7 +546,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-	glutSetOption(GLUT_MULTISAMPLE, 8);
+    glutSetOption(GLUT_MULTISAMPLE, 8);
     glutInitWindowPosition(POS_X, POS_Y);
     glutInitWindowSize(WIDTH, HEIGHT);
     glutCreateWindow("Snake Cube");
