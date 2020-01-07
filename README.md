@@ -1,2 +1,3 @@
-# Snake_Cube
+# OpenGL Snake Cube
+
 Game Snake Cube
