@@ -1,14 +1,15 @@
-#include <GL/glut.h>
+#include <GL/freeglut.h>
+#include <GL/glext.h>
 #include <math.h>
 #include <stdio.h>
 
-#define POS_X 420
-#define POS_Y 160
 #define WIDTH 600
 #define HEIGHT 600
 #define INTERVAL 15
 
 #define ROTATE_OFFSET 5.0f
+
+int POS_X, POS_Y;
 
 enum Cube_Face {
     FACE_FRONT,
@@ -310,7 +311,12 @@ void Timer(int value) {
 
 int main(int argc, char **argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+    glutSetOption(GLUT_MULTISAMPLE, 8);
+    POS_X = (glutGet(GLUT_SCREEN_WIDTH) - WIDTH) >> 1;
+    POS_Y = (glutGet(GLUT_SCREEN_HEIGHT) - HEIGHT) >> 1;
     glutInitWindowPosition(POS_X, POS_Y);
     glutInitWindowSize(WIDTH, HEIGHT);
     glutCreateWindow("Snake Cube");
