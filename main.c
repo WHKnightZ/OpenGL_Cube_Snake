@@ -1,6 +1,5 @@
 #include <GL/freeglut.h>
 #include <GL/glext.h>
-#include <GL/glut.h>
 #include <stdio.h>
 
 #define WIDTH 600
@@ -12,15 +11,23 @@
 #define MAX_TIME_ROTATE 18
 #define SLOW_VELOCITY_INDEX 4.5f // MAX_TIME_ROTATE * VELOCITY_BASE
 
-#define MAX_SNAKE_LENGTH 50
+#define MAX_SNAKE_LENGTH 100
 #define MAX_FOOD 20
 
 int POS_X, POS_Y;
+
+void (*Game_Display_Func[2])();
+void (*Game_Process_Func[2])();
 
 void (*Switch_Func[4])();
 void (*Move_Func[3])(int Drt);
 void (*Set_Offset_Func[3][3])();
 void (*Arrow_Func[4])();
+
+enum Game_Status{
+	GAME_STT_IDLE,
+	GAME_STT_PLAY
+};
 
 enum Cube_Face {
     FACE_FRONT,
@@ -79,6 +86,8 @@ Snake_Part Snake_Pos[MAX_SNAKE_LENGTH];
 int Snake_Length, Snake_Offset;
 int Pressed_Arrow = -1;
 
+int Game_Stt=GAME_STT_IDLE;
+
 void Switch_Up() {
     Face_Next = Face_Bottom;
     Face_Save = Face_Front;
@@ -129,7 +138,7 @@ void Switch_Left() {
 
 void Switch() {
     if (Time_Rotate == MAX_TIME_ROTATE) {
-        printf("x");
+        printf("OK ");
         Time_Rotate = 0;
         Snake_Pos[0].V = New_V;
         Snake_Pos[0].Drt = New_Drt;
@@ -184,6 +193,7 @@ void Set_Offset_x_y() {
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 0;
     New_Drt = -Face[Face_Current].d;
+    printf("xy\n");
 }
 
 void Set_Offset_x_z() {
@@ -193,7 +203,7 @@ void Set_Offset_x_z() {
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 0;
     New_Drt = -Face[Face_Current].d;
-    printf("a");
+    printf("xz\n");
 }
 
 void Set_Offset_y_x() {
@@ -203,6 +213,7 @@ void Set_Offset_y_x() {
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 1;
     New_Drt = -Face[Face_Current].d;
+    printf("yx\n");
 }
 
 void Set_Offset_y_z() {
@@ -212,6 +223,7 @@ void Set_Offset_y_z() {
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 1;
     New_Drt = -Face[Face_Current].d;
+    printf("yz\n");
 }
 
 void Set_Offset_z_x() {
@@ -221,7 +233,7 @@ void Set_Offset_z_x() {
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 2;
     New_Drt = -Face[Face_Current].d;
-    printf("b");
+    printf("zx\n");
 }
 
 void Set_Offset_z_y() {
@@ -231,6 +243,7 @@ void Set_Offset_z_y() {
     Snake_Pos[0].Drt = Face[Face_Next].d;
     New_V = 2;
     New_Drt = -Face[Face_Current].d;
+    printf("zy\n");
 }
 
 void Arrow_Up() {
@@ -258,6 +271,20 @@ void Arrow_Left() {
 }
 
 void Reset_View() {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glViewport(0, 0, WIDTH, HEIGHT);
+    gluPerspective(20.0, 1.0, 1.0, 150.0);
+    glTranslatef(0.0f, 0.0f, -94.0f);
+    //	glFrustum(-0.4, 0.4, -0.4, 0.4, 1.0, 200.0);
+    //	glTranslatef(0.0f, 0.0f, -50.0f);
+    glRotatef(x_angle, 1.0f, 0.0f, 0.0f);
+    glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
+    glRotatef(z_angle, 0.0f, 0.0f, 1.0f);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void Reload_View() {
     glMatrixMode(GL_PROJECTION);
     glRotatef(xo, 1.0f, 0.0f, 0.0f);
     glRotatef(yo, 0.0f, 1.0f, 0.0f);
@@ -325,14 +352,14 @@ void Create_Food(int n) {
             z = rand() % 18 + 1;
             break;
         case 1:
+        	x = rand() % 18 + 1;
             y = 19 - 19 * m;
-            x = rand() % 18 + 1;
             z = rand() % 18 + 1;
             break;
         case 2:
-            z = 19 - 19 * m;
             x = rand() % 18 + 1;
             y = rand() % 18 + 1;
+            z = 19 - 19 * m;
             break;
         }
     } while (0);
@@ -345,6 +372,36 @@ void Init_Food() {
     int i;
     for (i = 0; i < MAX_FOOD; i++)
         Create_Food(i);
+}
+
+void Game_Process_Idle(){
+	xo=0.3f;
+	yo=0.5f;
+	zo=0.0f;
+	Reload_View();
+}
+
+void Game_Process_Play(){
+	if (Time_Rotate < MAX_TIME_ROTATE) {
+        Reload_View();
+        Time_Rotate++;
+        if (Time_Rotate == MAX_TIME_ROTATE) {
+            Velocity *= SLOW_VELOCITY_INDEX;
+        }
+    }
+    Snake_Offset++;
+    if (Snake_Offset == 4) {
+        Snake_Offset = 0;
+        int i;
+        for (i = Snake_Length; i > 0; i--) {
+            Snake_Pos[i] = Snake_Pos[i - 1];
+        }
+        Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
+        if (Pressed_Arrow != -1 && Time_Rotate == MAX_TIME_ROTATE) {
+            Arrow_Func[Pressed_Arrow]();
+            Pressed_Arrow = -1;
+        }
+    }
 }
 
 void Init_Game() {
@@ -373,18 +430,12 @@ void Init_Game() {
     glShadeModel(GL_POLYGON_SMOOTH);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Game
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glViewport(0, 0, WIDTH, HEIGHT);
-    gluPerspective(20.0, 1.0, 1.0, 150.0);
-    glTranslatef(0.0f, 0.0f, -94.0f);
-    //	glFrustum(-0.4, 0.4, -0.4, 0.4, 1.0, 200.0);
-    //	glTranslatef(0.0f, 0.0f, -50.0f);
-    glRotatef(x_angle, 1.0f, 0.0f, 0.0f);
-    glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
-    glRotatef(z_angle, 0.0f, 0.0f, 1.0f);
-    glMatrixMode(GL_MODELVIEW);
     Reset_View();
+    
+    Game_Process_Func[GAME_STT_IDLE]=Game_Process_Idle;
+    Game_Process_Func[GAME_STT_PLAY]=Game_Process_Play;
+    
+    Reload_View();
     Face_Front = FACE_FRONT;
     Face_Left = FACE_LEFT;
     Face_Right = FACE_RIGHT;
@@ -567,6 +618,17 @@ void Resize(int x, int y) {
     glutReshapeWindow(WIDTH, HEIGHT);
 }
 
+void Special(int key, int x, int y);
+
+void Keyboard(GLubyte key, int x, int y){
+	if (key==13){
+		Reset_View();
+		glutKeyboardFunc(NULL);
+		glutSpecialFunc(Special);
+		Game_Stt=GAME_STT_PLAY;
+	}
+}
+
 void Special(int key, int x, int y) {
     if (key == GLUT_KEY_F1)
         Add_Part();
@@ -588,26 +650,7 @@ void Special(int key, int x, int y) {
 }
 
 void Timer(int value) {
-    if (Time_Rotate < MAX_TIME_ROTATE) {
-        Reset_View();
-        Time_Rotate++;
-        if (Time_Rotate == MAX_TIME_ROTATE) {
-            Velocity *= SLOW_VELOCITY_INDEX;
-        }
-    }
-    Snake_Offset++;
-    if (Snake_Offset == 4) {
-        Snake_Offset = 0;
-        int i;
-        for (i = Snake_Length; i > 0; i--) {
-            Snake_Pos[i] = Snake_Pos[i - 1];
-        }
-        Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
-        if (Pressed_Arrow != -1 && Time_Rotate == MAX_TIME_ROTATE) {
-            Arrow_Func[Pressed_Arrow]();
-            Pressed_Arrow = -1;
-        }
-    }
+    Game_Process_Func[Game_Stt]();
     glutPostRedisplay();
     glutTimerFunc(INTERVAL, Timer, 0);
 }
@@ -624,7 +667,7 @@ int main(int argc, char **argv) {
     glutInitWindowSize(WIDTH, HEIGHT);
     glutCreateWindow("Snake Cube");
     Init_Game();
-    glutSpecialFunc(Special);
+    glutKeyboardFunc(Keyboard);
     glutTimerFunc(0, Timer, 0);
     glutDisplayFunc(Display);
     //    glutReshapeFunc(Resize);
