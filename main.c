@@ -1,5 +1,12 @@
 #include <GL/freeglut.h>
 #include <GL/glext.h>
+
+/*
+#include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+*/
+
 #include <stdio.h>
 
 #define WIDTH 600
@@ -16,10 +23,11 @@
 
 int POS_X, POS_Y;
 
-enum Game_Status{
-	GAME_STT_IDLE,
-	GAME_STT_PLAY,
-	GAME_STT_DEAD
+enum Game_Status {
+    GAME_STT_IDLE,    // Cube Snake, Press Any Key
+    GAME_STT_PREPARE, // 3... 2... 1...
+    GAME_STT_PLAY,
+    GAME_STT_DEAD // Game Over
 };
 
 enum Cube_Face {
@@ -38,8 +46,8 @@ enum Key {
     KEY_LEFT
 };
 
-typedef struct s_Vec3{
-	float x,y,z;
+typedef struct s_Vec3 {
+    int x, y, z;
 } s_Vec3;
 
 typedef struct s_Face {
@@ -47,7 +55,7 @@ typedef struct s_Face {
 } s_Face;
 
 typedef struct s_Snake_Pos {
-    float x, y, z;
+    int x, y, z;
     int V, Drt;
 } s_Snake_Pos;
 
@@ -58,19 +66,52 @@ typedef struct s_Food_Pos {
 
 // Prototype
 
+void Game_Display_Idle();
+void Game_Display_Prepare();
+void Game_Display_Play();
+void Game_Display_Dead();
 void Game_Process_Idle();
+void Game_Process_Prepare();
 void Game_Process_Play();
 void Game_Process_Dead();
+void Switch_Up();
+void Switch_Right();
+void Switch_Down();
+void Switch_Left();
+void Move_X(int Drt);
+void Move_Y(int Drt);
+void Move_Z(int Drt);
+void Set_Offset_x_y();
+void Set_Offset_x_z();
+void Set_Offset_y_x();
+void Set_Offset_y_z();
+void Set_Offset_z_x();
+void Set_Offset_z_y();
+void Arrow_Up();
+void Arrow_Right();
+void Arrow_Down();
+void Arrow_Left();
+void Draw_Face_Front();
+void Draw_Face_Left();
+void Draw_Face_Right();
+void Draw_Face_Top();
+void Draw_Face_Bottom();
+void Draw_Face_Back();
+void Translate_Offset(s_Snake_Pos *s);
+void Keyboard(GLubyte key, int x, int y);
 void Special(int key, int x, int y);
 
 // Function_Pointer
 
-void (*Game_Display_Func[3])();
-void (*Game_Process_Func[])()={Game_Process_Idle, Game_Process_Play, Game_Process_Dead};
-void (*Switch_Func[4])();
-void (*Move_Func[3])(int Drt);
-void (*Set_Offset_Func[3][3])();
-void (*Arrow_Func[4])();
+void (*Game_Display_Func[])() = {Game_Display_Idle, Game_Display_Prepare, Game_Display_Play, Game_Display_Dead};
+void (*Game_Process_Func[])() = {Game_Process_Idle, Game_Process_Prepare, Game_Process_Play, Game_Process_Dead};
+void (*Switch_Func[])() = {Switch_Up, Switch_Right, Switch_Down, Switch_Left};
+void (*Move_Func[3])(int Drt) = {Move_X, Move_Y, Move_Z};
+void (*Set_Offset_Func[3][3])() = {
+    {NULL, Set_Offset_x_y, Set_Offset_x_z},
+    {Set_Offset_y_x, NULL, Set_Offset_y_z},
+    {Set_Offset_z_x, Set_Offset_z_y, NULL}};
+void (*Arrow_Func[4])() = {Arrow_Up, Arrow_Right, Arrow_Down, Arrow_Left};
 
 // Variable
 
@@ -90,9 +131,9 @@ const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
 const float x_angle = 16.0f, y_angle = 0.0f, z_angle = 0.0f;
 
 float Velocity = VELOCITY_BASE;
-int New_V = 2, New_Drt = -1;
-int Key_Current = KEY_RIGHT;
-int Time_Rotate = MAX_TIME_ROTATE;
+int New_V, New_Drt;
+int Key_Current;
+int Time_Rotate;
 float xo, yo, zo;
 int Face_Front, Face_Left, Face_Right, Face_Top, Face_Bottom, Face_Back, Face_Current, Face_Next, Face_Save;
 int Map[20][20][20]; // x y z
@@ -100,9 +141,12 @@ s_Vec3 Map_Velocity[] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 s_Food_Pos Food_Pos[MAX_FOOD];
 s_Snake_Pos Snake_Pos[MAX_SNAKE_LENGTH];
 int Snake_Length, Snake_Offset;
-int Pressed_Arrow = -1;
+int Pressed_Arrow;
 
-int Game_Stt=GAME_STT_IDLE;
+int Game_Timer;
+int Game_Stt = GAME_STT_IDLE;
+
+float Offset = 1.0f / 6;
 
 // Function
 
@@ -169,10 +213,10 @@ void Move_X(int Drt) {
     Snake_Pos[0].x += Snake_Pos[0].Drt;
     if (Time_Rotate == MAX_TIME_ROTATE) {
         if (Drt == -1) {
-            if (Snake_Pos[0].x <0.05f)
+            if (Snake_Pos[0].x == 0)
                 Switch();
         } else {
-            if (Snake_Pos[0].x >18.95f)
+            if (Snake_Pos[0].x == 19)
                 Switch();
         }
     }
@@ -182,10 +226,10 @@ void Move_Y(int Drt) {
     Snake_Pos[0].y += Snake_Pos[0].Drt;
     if (Time_Rotate == MAX_TIME_ROTATE) {
         if (Drt == -1) {
-            if (Snake_Pos[0].y <0.05f)
+            if (Snake_Pos[0].y == 0)
                 Switch();
         } else {
-            if (Snake_Pos[0].y >18.95f)
+            if (Snake_Pos[0].y == 19)
                 Switch();
         }
     }
@@ -195,10 +239,10 @@ void Move_Z(int Drt) {
     Snake_Pos[0].z += Snake_Pos[0].Drt;
     if (Time_Rotate == MAX_TIME_ROTATE) {
         if (Drt == -1) {
-            if (Snake_Pos[0].z <0.05f)
+            if (Snake_Pos[0].z == 0)
                 Switch();
         } else {
-            if (Snake_Pos[0].z >18.95f)
+            if (Snake_Pos[0].z == 19)
                 Switch();
         }
     }
@@ -292,7 +336,7 @@ void Reset_View() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glViewport(0, 0, WIDTH, HEIGHT);
-    gluPerspective(20.0, 1.0, 1.0, 150.0);
+    gluPerspective(30.0, 1.0, 1.0, 150.0);
     glTranslatef(0.0f, 0.0f, -94.0f);
     //	glFrustum(-0.4, 0.4, -0.4, 0.4, 1.0, 200.0);
     //	glTranslatef(0.0f, 0.0f, -50.0f);
@@ -335,23 +379,27 @@ void Load_Map() {
 }
 
 int Check_Is_Snake(int x, int y, int z) {
-//	for 
+    int i;
+    for (i = 0; i <= Snake_Length; i++)
+        if (Snake_Pos[i].x == x && Snake_Pos[i].y == y && Snake_Pos[i].z == z)
+            return 1;
     return 0;
 }
 
 int Check_Is_Wall(int x, int y, int z) {
-	if (Map[x][y][z]==1) return 1;
+    if (Map[x][y][z] == 1)
+        return 1;
     return 0;
 }
 
 int Check_Is_Food(int x, int y, int z) {
-	int i;
-	for (i=0;i<MAX_FOOD;i++){
-		if (Food_Pos[i].x==x&&Food_Pos[i].y==y&&Food_Pos[i].z==z){
-			return 1;
-		}
-	}
-    return 0;
+    int i;
+    for (i = 0; i < MAX_FOOD; i++) {
+        if (Food_Pos[i].x == x && Food_Pos[i].y == y && Food_Pos[i].z == z) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 void Add_Part() {
@@ -378,7 +426,7 @@ void Create_Food(int n) {
             z = rand() % 18 + 1;
             break;
         case 1:
-        	x = rand() % 18 + 1;
+            x = rand() % 18 + 1;
             y = 19 - 19 * m;
             z = rand() % 18 + 1;
             break;
@@ -388,7 +436,7 @@ void Create_Food(int n) {
             z = 19 - 19 * m;
             break;
         }
-    } while (0);
+    } while (Check_Is_Snake(x, y, z) || Check_Is_Wall(x, y, z) || Check_Is_Food(x, y, z) >= 0);
     Food_Pos[n].x = x;
     Food_Pos[n].y = y;
     Food_Pos[n].z = z;
@@ -400,15 +448,75 @@ void Init_Food() {
         Create_Food(i);
 }
 
-void Game_Process_Idle(){
-	xo=0.3f;
-	yo=0.5f;
-	zo=0.0f;
-	Reload_View();
+void Game_Display_Idle() {
+    Game_Display_Play();
 }
 
-void Game_Process_Play(){
-	if (Time_Rotate < MAX_TIME_ROTATE) {
+void Game_Display_Prepare() {
+    Game_Display_Play();
+}
+
+void Game_Display_Play() {
+    int i, j;
+    //    for (i = 1; i < 19; i++) {
+    //        glBegin(GL_LINES);
+    //        glVertex3f(-9.0f, i - 9.0f, 9.1f);
+    //        glVertex3f(9.0f, i - 9.0f, 9.1f);
+    //        glVertex3f(i - 9.0f, -9.0f, 9.1f);
+    //        glVertex3f(i - 9.0f, 9.0f, 9.1f);
+    //        glEnd();
+    //    }
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Cube);
+    glutSolidCube(18.0);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Wall);
+    Draw_Face_Front();
+    Draw_Face_Left();
+    Draw_Face_Right();
+    Draw_Face_Top();
+    Draw_Face_Bottom();
+    Draw_Face_Back();
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Food);
+    for (i = 0; i < MAX_FOOD; i++) {
+        glLoadIdentity();
+        glTranslatef(Food_Pos[i].x - 9.5f, Food_Pos[i].y - 9.5f, Food_Pos[i].z - 9.5f);
+        glutSolidCube(1.0);
+    }
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake);
+    for (i = 0; i < Snake_Length; i++) {
+        glLoadIdentity();
+        glTranslatef(Snake_Pos[i].x - 9.5f, Snake_Pos[i].y - 9.5f, Snake_Pos[i].z - 9.5f);
+        glutSolidCube(1.0);
+    }
+    if (Snake_Length > 0) {
+        Translate_Offset(&Snake_Pos[Snake_Length]);
+        glutSolidCube(1.0);
+    }
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake_Head);
+    Translate_Offset(&Snake_Pos[0]);
+    glutSolidCube(1.2);
+}
+
+void Game_Display_Dead() {
+    Game_Display_Play();
+}
+
+void Game_Process_Idle() {
+    xo = 0.3f;
+    yo = 0.5f;
+    zo = 0.0f;
+    Reload_View();
+}
+
+void Game_Process_Prepare() {
+    Game_Timer++;
+    if (Game_Timer == 40) {
+        Game_Stt = GAME_STT_PLAY;
+        glutSpecialFunc(Special);
+    }
+}
+
+void Game_Process_Play() {
+    if (Time_Rotate < MAX_TIME_ROTATE) {
         Reload_View();
         Time_Rotate++;
         if (Time_Rotate == MAX_TIME_ROTATE) {
@@ -416,13 +524,22 @@ void Game_Process_Play(){
         }
     }
     Snake_Offset++;
-    if (Snake_Offset == 4) {
+    if (Snake_Offset == 6) {
         Snake_Offset = 0;
         int i;
         for (i = Snake_Length; i > 0; i--) {
             Snake_Pos[i] = Snake_Pos[i - 1];
         }
         Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
+        if (Check_Is_Wall(Snake_Pos[0].x, Snake_Pos[0].y, Snake_Pos[0].z)) {
+            Game_Timer = 0;
+            Game_Stt = GAME_STT_DEAD;
+        }
+        int n = Check_Is_Food(Snake_Pos[0].x, Snake_Pos[0].y, Snake_Pos[0].z);
+        if (n >= 0) {
+            Create_Food(n);
+            Add_Part();
+        }
         if (Pressed_Arrow != -1 && Time_Rotate == MAX_TIME_ROTATE) {
             Arrow_Func[Pressed_Arrow]();
             Pressed_Arrow = -1;
@@ -430,8 +547,35 @@ void Game_Process_Play(){
     }
 }
 
-void Game_Process_Dead(){
-	// Do nothing
+void Game_Process_Dead() {
+    Game_Timer++;
+    if (Game_Timer == 40) {
+        Game_Stt = GAME_STT_IDLE;
+        glutKeyboardFunc(Keyboard);
+    }
+}
+
+void Reload_Game() {
+    New_V = 2;
+    New_Drt = -1;
+    Key_Current = KEY_RIGHT;
+    Pressed_Arrow = -1;
+    Time_Rotate = MAX_TIME_ROTATE;
+    Snake_Offset = 0;
+    Snake_Length = 1;
+    Snake_Pos[0].x = 10;
+    Snake_Pos[1].x = 9;
+    int i;
+    for (i = 0; i <= Snake_Length; i++) {
+        Snake_Pos[i].y = 10;
+        Snake_Pos[i].z = 19;
+        Snake_Pos[i].V = 0;
+        Snake_Pos[i].Drt = 1;
+    }
+    Face_Current = Face_Front;
+    Face_Next = Face_Right;
+    Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
+    Init_Food();
 }
 
 void Init_Game() {
@@ -479,39 +623,8 @@ void Init_Game() {
     Face[FACE_BOTTOM].d = -1;
     Face[FACE_BACK].f = 2;
     Face[FACE_BACK].d = -1;
-    Switch_Func[KEY_UP] = Switch_Up;
-    Switch_Func[KEY_RIGHT] = Switch_Right;
-    Switch_Func[KEY_DOWN] = Switch_Down;
-    Switch_Func[KEY_LEFT] = Switch_Left;
-    Move_Func[0] = Move_X;
-    Move_Func[1] = Move_Y;
-    Move_Func[2] = Move_Z;
-    Set_Offset_Func[0][1] = Set_Offset_x_y;
-    Set_Offset_Func[0][2] = Set_Offset_x_z;
-    Set_Offset_Func[1][0] = Set_Offset_y_x;
-    Set_Offset_Func[1][2] = Set_Offset_y_z;
-    Set_Offset_Func[2][0] = Set_Offset_z_x;
-    Set_Offset_Func[2][1] = Set_Offset_z_y;
-    Arrow_Func[KEY_UP] = Arrow_Up;
-    Arrow_Func[KEY_RIGHT] = Arrow_Right;
-    Arrow_Func[KEY_DOWN] = Arrow_Down;
-    Arrow_Func[KEY_LEFT] = Arrow_Left;
     Load_Map();
-    Snake_Offset = 0;
-    Snake_Length = 1;
-    Snake_Pos[0].x = 10;
-    Snake_Pos[1].x = 9;
-    int i;
-    for (i = 0; i <= Snake_Length; i++) {
-        Snake_Pos[i].y = 10;
-        Snake_Pos[i].z = 19;
-        Snake_Pos[i].V = 0;
-        Snake_Pos[i].Drt = 1;
-    }
-    Face_Current = Face_Front;
-    Face_Next = Face_Right;
-    Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
-    Init_Food();
+    Reload_Game();
 }
 
 void Draw_Face_Front() {
@@ -584,57 +697,21 @@ void Translate_Offset(s_Snake_Pos *s) {
     glLoadIdentity();
     switch (s->V) {
     case 0:
-        glTranslatef(s->x + s->Drt * 0.25f * Snake_Offset-9.5f, s->y-9.5f, s->z-9.5f);
+        glTranslatef(s->x + s->Drt * Offset * Snake_Offset - 9.5f, s->y - 9.5f, s->z - 9.5f);
         break;
     case 1:
-        glTranslatef(s->x-9.5f, s->y + s->Drt * 0.25f * Snake_Offset-9.5f, s->z-9.5f);
+        glTranslatef(s->x - 9.5f, s->y + s->Drt * Offset * Snake_Offset - 9.5f, s->z - 9.5f);
         break;
     case 2:
-        glTranslatef(s->x-9.5f, s->y-9.5f, s->z + s->Drt * 0.25f * Snake_Offset-9.5f);
+        glTranslatef(s->x - 9.5f, s->y - 9.5f, s->z + s->Drt * Offset * Snake_Offset - 9.5f);
         break;
     }
 }
 
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Game_Display_Func[Game_Stt]();
     glLoadIdentity();
-    int i, j;
-        for (i=1;i<19;i++){
-        	glBegin(GL_LINES);
-        	glVertex3f(-9.0f,i-9.0f,9.1f);
-        	glVertex3f(9.0f,i-9.0f,9.1f);
-        	glVertex3f(i-9.0f,-9.0f,9.1f);
-        	glVertex3f(i-9.0f,9.0f,9.1f);
-        	glEnd();
-    	}
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Cube);
-    glutSolidCube(18.0);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Wall);
-    Draw_Face_Front();
-    Draw_Face_Left();
-    Draw_Face_Right();
-    Draw_Face_Top();
-    Draw_Face_Bottom();
-    Draw_Face_Back();
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Food);
-    for (i = 0; i < MAX_FOOD; i++) {
-        glLoadIdentity();
-        glTranslatef(Food_Pos[i].x - 9.5f, Food_Pos[i].y - 9.5f, Food_Pos[i].z-9.5f);
-        glutSolidCube(1.0);
-    }
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake);
-    for (i = 0; i < Snake_Length; i++) {
-        glLoadIdentity();
-        glTranslatef(Snake_Pos[i].x - 9.5f, Snake_Pos[i].y - 9.5f, Snake_Pos[i].z - 9.5f);
-        glutSolidCube(1.0);
-    }
-    if (Snake_Length > 0) {
-        Translate_Offset(&Snake_Pos[Snake_Length]);
-        glutSolidCube(1.0);
-    }
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake_Head);
-    Translate_Offset(&Snake_Pos[0]);
-    glutSolidCube(1.2);
     glutSwapBuffers();
 }
 
@@ -643,13 +720,13 @@ void Resize(int x, int y) {
     glutReshapeWindow(WIDTH, HEIGHT);
 }
 
-void Keyboard(GLubyte key, int x, int y){
-	if (key==13){
-		Reset_View();
-		glutKeyboardFunc(NULL);
-		glutSpecialFunc(Special);
-		Game_Stt=GAME_STT_PLAY;
-	}
+void Keyboard(GLubyte key, int x, int y) {
+    if (key == 13) {
+        Reset_View();
+        Game_Timer = 0;
+        glutKeyboardFunc(NULL);
+        Game_Stt = GAME_STT_PREPARE;
+    }
 }
 
 void Special(int key, int x, int y) {
