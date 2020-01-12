@@ -1,3 +1,3 @@
 # OpenGL Cube Snake
 
-Game Snake Cube
+Game Cube Snake
