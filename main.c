@@ -1,159 +1,4 @@
-#include <GL/freeglut.h>
-#include <GL/glext.h>
-#include <stdio.h>
-#include <time.h>
-
-/*
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-*/
-
-#define WIDTH 600
-#define HEIGHT 600
-#define INTERVAL 20
-
-#define MAX_TIME_ROTATE 18
-#define ROTATE_OFFSET 5.0f // 90 / MAX_TIME_ROTATE
-
-#define MAX_SNAKE_LENGTH 400
-#define MAX_FOOD 15
-
-#define OFFSET_TIME 6
-#define OFFSET_TIME_ROTATE 18 // = MAX_TIME_ROTATE, slow the velocity when rotate
-
-#define WALL_PER_FACE 7
-
-int POS_X, POS_Y;
-
-enum Game_Status {
-    GAME_STT_IDLE,    // Cube Snake, Press Any Key
-    GAME_STT_PREPARE, // 3... 2... 1...
-    GAME_STT_PLAY,
-    GAME_STT_DEAD // Game Over
-};
-
-enum Cube_Face {
-    FACE_FRONT,
-    FACE_LEFT,
-    FACE_RIGHT,
-    FACE_TOP,
-    FACE_BOTTOM,
-    FACE_BACK
-};
-
-enum Key {
-    KEY_UP,
-    KEY_RIGHT,
-    KEY_DOWN,
-    KEY_LEFT
-};
-
-typedef struct s_Vec3 {
-    int x, y, z;
-} s_Vec3;
-
-typedef struct s_Face {
-    int f, d;
-} s_Face;
-
-typedef struct s_Snake_Pos {
-    int x, y, z;
-    int V, Drt;
-} s_Snake_Pos;
-
-typedef struct s_Food_Pos {
-    int x, y, z;
-    int Is_Alive;
-} s_Food_Pos;
-
-// Prototype
-
-void Game_Display_Idle();
-void Game_Display_Prepare();
-void Game_Display_Play();
-void Game_Display_Dead();
-void Game_Process_Idle();
-void Game_Process_Prepare();
-void Game_Process_Play();
-void Game_Process_Dead();
-void Switch_Up();
-void Switch_Right();
-void Switch_Down();
-void Switch_Left();
-void Move_X(int Drt);
-void Move_Y(int Drt);
-void Move_Z(int Drt);
-void Set_Offset_x_y();
-void Set_Offset_x_z();
-void Set_Offset_y_x();
-void Set_Offset_y_z();
-void Set_Offset_z_x();
-void Set_Offset_z_y();
-void Arrow_Up();
-void Arrow_Right();
-void Arrow_Down();
-void Arrow_Left();
-void Draw_Face_Front();
-void Draw_Face_Left();
-void Draw_Face_Right();
-void Draw_Face_Top();
-void Draw_Face_Bottom();
-void Draw_Face_Back();
-void Translate_Offset(s_Snake_Pos *s);
-void Keyboard(GLubyte key, int x, int y);
-void Special(int key, int x, int y);
-
-// Function_Pointer
-
-void (*Game_Display_Func[])() = {Game_Display_Idle, Game_Display_Prepare, Game_Display_Play, Game_Display_Dead};
-void (*Game_Process_Func[])() = {Game_Process_Idle, Game_Process_Prepare, Game_Process_Play, Game_Process_Dead};
-void (*Switch_Func[])() = {Switch_Up, Switch_Right, Switch_Down, Switch_Left};
-void (*Move_Func[])(int Drt) = {Move_X, Move_Y, Move_Z};
-void (*Set_Offset_Func[3][3])() = {
-    {NULL, Set_Offset_x_y, Set_Offset_x_z},
-    {Set_Offset_y_x, NULL, Set_Offset_y_z},
-    {Set_Offset_z_x, Set_Offset_z_y, NULL}};
-void (*Arrow_Func[])() = {Arrow_Up, Arrow_Right, Arrow_Down, Arrow_Left};
-
-// Variable
-
-s_Face Face[6];
-
-const GLfloat BG_Color[] = {0.275f, 0.784f, 0.827f, 1.0f};
-const GLfloat Light_Pos[] = {-27.0f, 25.0f, 29.0f, 0.0f};
-const GLfloat Light_Pos2[] = {27.0f, -25.0f, -29.0f, 0.0f};
-const GLfloat Light_Dif[] = {1.0f, 1.0f, 1.0f, 1.0f};
-const GLfloat Ambient[] = {0.400f, 0.900f, 0.200f, 1.0f};
-const GLfloat Specular[] = {1.000f, 1.000f, 1.000f, 1.0f};
-const GLfloat Diffuse_Cube[] = {0.200f, 0.980f, 0.300f, 1.0f};
-const GLfloat Diffuse_Wall[] = {0.110f, 0.537f, 1.000f, 1.0f};
-const GLfloat Diffuse_Food[] = {1.000f, 0.792f, 0.278f, 1.0f};
-const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
-const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
-const float x_angle = 16.0f, y_angle = 0.0f, z_angle = 0.0f;
-
-int New_V, New_Drt;
-int Key_Current;
-int Time_Rotate;
-float xo, yo, zo;
-int Face_Front, Face_Left, Face_Right, Face_Top, Face_Bottom, Face_Back, Face_Current, Face_Next, Face_Save;
-int Map[20][20][20]; // x y z
-s_Vec3 Map_Velocity[] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-s_Food_Pos Food_Pos[MAX_FOOD];
-s_Snake_Pos Snake_Pos[MAX_SNAKE_LENGTH];
-int Snake_Length, Snake_Offset;
-int Pressed_Arrow;
-
-int Game_Timer;
-int Game_Stt = GAME_STT_IDLE;
-
-int Offset_Time;
-float Offset_Size;
-
-int Is_First_Time = 1;
-
-// Function
+#include "main.h"
 
 void Switch_Up() {
     Face_Next = Face_Bottom;
@@ -454,15 +299,7 @@ void Init_Food() {
         Create_Food(i);
 }
 
-void Game_Display_Idle() {
-    Game_Display_Play();
-}
-
-void Game_Display_Prepare() {
-    Game_Display_Play();
-}
-
-void Game_Display_Play() {
+void Draw_Game() {
     int i, j;
     //        for (i = 1; i < 19; i++) {
     //            glBegin(GL_LINES);
@@ -502,11 +339,60 @@ void Game_Display_Play() {
     glutSolidCube(1.2);
 }
 
-void Game_Display_Dead() {
-    Game_Display_Play();
+void Draw_2D_Begin() {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, WIDTH, HEIGHT, 0);
+    glViewport(0, 0, WIDTH, HEIGHT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+}
+
+void Draw_2D_End() {
+	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void Game_Display_Idle() {
+    Draw_Game();
+    Draw_2D_Begin();
+    Map_Texture(&Img_Logo);
+    Draw_Rect(&Rct_Logo);
+    glColor4f(1.0f,1.0f,1.0f, (40.0f-Idle_Stt)/40);
+    Map_Texture(&Img_PressAnyKey);
+    Draw_Rect(&Rct_PressAnyKey);
+    glColor3f(1.0f,1.0f,1.0f);
+    Draw_2D_End();
+}
+
+void Game_Display_Prepare() {
+    Draw_Game();
+    Draw_2D_Begin();
+    Map_Texture(&Img_Prepare[Prepare_Stt]);
+    Draw_Rect(&Rct_Prepare[Prepare_Stt]);
+    Draw_2D_End();
+}
+
+void Game_Display_Play() {
+    Draw_Game();
+}
+
+void Game_Display_GameOver() {
+    Draw_Game();
 }
 
 void Game_Process_Idle() {
+	Idle_Stt+=Idle_Stt_Offset;
+	if (Idle_Stt==0||Idle_Stt==40)
+		Idle_Stt_Offset=-Idle_Stt_Offset;
     xo = 0.2f;
     yo = 0.4f;
     zo = 0.0f;
@@ -515,9 +401,13 @@ void Game_Process_Idle() {
 
 void Game_Process_Prepare() {
     Game_Timer++;
-    if (Game_Timer == 40) {
-        Game_Stt = GAME_STT_PLAY;
-        glutSpecialFunc(Special);
+    if (Game_Timer == 50) {
+    	Game_Timer=0;
+    	Prepare_Stt++;
+    	if (Prepare_Stt==3){
+	        Game_Stt = GAME_STT_PLAY;
+	        glutSpecialFunc(Special);
+	    }
     }
 }
 
@@ -545,7 +435,7 @@ void Game_Process_Play() {
         int Next_z = Snake_Pos[0].z + Snake_Pos[0].Drt * Vec3_Ptr->z;
         if (Check_Is_Wall(Next_x, Next_y, Next_z) || Check_Is_Snake(Next_x, Next_y, Next_z)) {
             Game_Timer = 0;
-            Game_Stt = GAME_STT_DEAD;
+            Game_Stt = GAME_STT_GAMEOVER;
         }
         int n = Check_Is_Food(Snake_Pos[0].x, Snake_Pos[0].y, Snake_Pos[0].z);
         if (n >= 0) {
@@ -559,7 +449,7 @@ void Game_Process_Play() {
     }
 }
 
-void Game_Process_Dead() {
+void Game_Process_GameOver() {
     Game_Timer++;
     if (Game_Timer == 40) {
         Game_Stt = GAME_STT_IDLE;
@@ -599,7 +489,7 @@ void Reload_Game() {
 }
 
 void Init_Game() {
-    // GL
+    // GL - 3D
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, Light_Dif);
@@ -623,6 +513,11 @@ void Init_Game() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glShadeModel(GL_POLYGON_SMOOTH);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
+    // GL - 2D Texture
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     // Game
     Reset_View();
     Face[FACE_FRONT].f = 2;
@@ -637,6 +532,18 @@ void Init_Game() {
     Face[FACE_BOTTOM].d = -1;
     Face[FACE_BACK].f = 2;
     Face[FACE_BACK].d = -1;
+    Init_Font();
+    Create_Image_Logo();
+    Create_Image_Font(&Img_PressAnyKey, "Press Any Key", SMALL, Color_White);
+    Create_Rect_Image(&Rct_PressAnyKey, &Img_PressAnyKey, (WIDTH - Img_PressAnyKey.w) / 2.0f, 400.0f);
+    Create_Image_Font(&Img_GameOver, "Game Over", LARGE, Color_Red);
+    Create_Rect_Image(&Rct_GameOver, &Img_GameOver, (WIDTH - Img_GameOver.w) / 2.0f, 300.0f);
+    Create_Image_Font(&Img_Prepare[0], "3 . . .", MEDIUM, Color_White);
+    Create_Image_Font(&Img_Prepare[1], "2 . . .", MEDIUM, Color_White);
+    Create_Image_Font(&Img_Prepare[2], "1 . . .", MEDIUM, Color_White);
+    int i;
+    for (i=0;i<3;i++)
+    	Create_Rect_Image(&Rct_Prepare[i], &Img_Prepare[i], (WIDTH - Img_Prepare[i].w) / 2.0f, 200.0f);
     Load_Map();
     Reload_Game();
 }
@@ -735,16 +642,15 @@ void Resize(int x, int y) {
 }
 
 void Keyboard(GLubyte key, int x, int y) {
-    if (key == 13) {
-        if (Is_First_Time)
-            Is_First_Time = 0;
-        else
-            Reload_Game();
-        Reset_View();
-        Game_Timer = 0;
-        glutKeyboardFunc(NULL);
-        Game_Stt = GAME_STT_PREPARE;
-    }
+    if (Is_First_Time)
+        Is_First_Time = 0;
+    else
+        Reload_Game();
+    Reset_View();
+    Game_Timer = 0;
+    glutKeyboardFunc(NULL);
+    Game_Stt = GAME_STT_PREPARE;
+    Prepare_Stt=0;
 }
 
 void Special(int key, int x, int y) {
