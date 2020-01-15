@@ -11,7 +11,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=-lopengl32 -lglu32 -lfreeglut_@@_
+Linker=-lopengl32 -lglu32_@@_-lfreeglut -lSDL2_@@_-lSDL2_mixer_@@_
 IsCpp=0
 Icon=
 ExeOutput=
@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=3
 CompilerSettings=0000000100000000000000000
-UnitCount=6
+UnitCount=7
 
 [VersionInfo]
 Major=1
@@ -109,4 +109,14 @@ Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=$(CC) -c init.c -o init.o $(CFLAGS)
+
+[Unit7]
+FileName=sound.c
+CompileCpp=0
+Folder=
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=$(CC) -c sound.c -o sound.o $(CFLAGS)
 

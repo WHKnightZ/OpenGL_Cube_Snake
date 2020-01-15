@@ -22,22 +22,26 @@ void Reload_View() {
 
 void Draw_Game() {
     int i, j;
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Cube);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Cube);
+    glColor3fv(F_Color_Cube);
     glutSolidCube(18.0);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Wall);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Wall);
+    glColor3fv(F_Color_Wall);
     Draw_Face_Front();
     Draw_Face_Left();
     Draw_Face_Right();
     Draw_Face_Top();
     Draw_Face_Bottom();
     Draw_Face_Back();
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Food);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Food);
+    glColor3fv(F_Color_Food);
     for (i = 0; i < MAX_FOOD; i++) {
         glLoadIdentity();
         glTranslatef(Food_Pos[i].x - 9.5f, Food_Pos[i].y - 9.5f, Food_Pos[i].z - 9.5f);
         glutSolidCube(1.0);
     }
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake);
+    glColor3fv(F_Color_Snake);
     for (i = 0; i < Snake_Length; i++) {
         glLoadIdentity();
         glTranslatef(Snake_Pos[i].x - 9.5f, Snake_Pos[i].y - 9.5f, Snake_Pos[i].z - 9.5f);
@@ -47,9 +51,11 @@ void Draw_Game() {
         Translate_Offset(&Snake_Pos[Snake_Length]);
         glutSolidCube(1.0);
     }
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake_Head);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Snake_Head);
+    glColor3fv(F_Color_Snake_Head);
     Translate_Offset(&Snake_Pos[0]);
     glutSolidCube(1.2);
+    glColor3fv(F_Color_White);
 }
 
 void Draw_2D_Begin() {

@@ -260,11 +260,14 @@ void Game_Process_Play() {
         int Next_y = Snake_Pos[0].y + Snake_Pos[0].Drt * Vec3_Ptr->y;
         int Next_z = Snake_Pos[0].z + Snake_Pos[0].Drt * Vec3_Ptr->z;
         if (Check_Is_Wall(Next_x, Next_y, Next_z) || Check_Is_Snake(Next_x, Next_y, Next_z)) {
+            Mix_PlayChannel(-1, Sound_Dead, 0);
             Game_Timer = 0;
             Game_Stt = GAME_STT_DEAD;
         }
         int n = Check_Is_Food(Snake_Pos[0].x, Snake_Pos[0].y, Snake_Pos[0].z);
         if (n >= 0) {
+            Mix_PlayChannel(-1, Sound_Food, 0);
+            Score_Is_Animate = 1;
             Update_Score(1);
             Create_Food(n);
             Add_Part();
@@ -274,11 +277,27 @@ void Game_Process_Play() {
             Pressed_Arrow = -1;
         }
     }
+    if (Score_Is_Animate) {
+        Score_Animate_Stt++;
+        if (Score_Animate_Stt == 10) {
+            Score_Animate_Stt = 0;
+            Score_Is_Animate = 0;
+        }
+        Score_Start_Y = POS_SCORE + Score_Animate_Offset[Score_Animate_Stt];
+    }
 }
 
 void Game_Process_Dead() {
+    if (Score_Is_Animate) {
+        Score_Animate_Stt++;
+        if (Score_Animate_Stt == 10) {
+            Score_Animate_Stt = 0;
+            Score_Is_Animate = 0;
+        }
+        Score_Start_Y = POS_SCORE + Score_Animate_Offset[Score_Animate_Stt];
+    }
     Game_Timer++;
-    if (Game_Timer == 40) {
+    if (Game_Timer == 50) {
         Score_Start_Y = POS_SCORE_GAMEOVER;
         Game_Stt = GAME_STT_GAMEOVER;
         glutKeyboardFunc(Keyboard);

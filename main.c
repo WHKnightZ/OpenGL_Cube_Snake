@@ -13,6 +13,7 @@ void Resize(int x, int y) {
 }
 
 void Keyboard(GLubyte key, int x, int y) {
+    Mix_PlayChannel(-1, Sound_Play, 0);
     if (Is_First_Time)
         Is_First_Time = 0;
     else

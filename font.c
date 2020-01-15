@@ -17,7 +17,7 @@ void Init_Font() {
             fscanf(f, "%d %d %d %d %d %d %d %d", &id, &x, &y, &w, &h, &xo, &yo, &wf);
             Crop_Image(&Img_Font, &Img_Char_Tmp, x, y, w, h);
             Create_Image(&Img_Char[k][id], wf, hf);
-            Mix_Image(&Img_Char[k][id], &Img_Char_Tmp, xo, yo);
+            Mix_Image_NoBG(&Img_Char[k][id], &Img_Char_Tmp, xo, yo);
             Delete_Image(&Img_Char_Tmp);
         }
         Delete_Image(&Img_Font);
@@ -41,21 +41,21 @@ void Create_Image_Logo() {
     c = Logo;
     x = 0;
     while (*c != '\0') {
-        Mix_Image_Color_NoBG(&Img_Tmp, &Img_Char[size][*c], x + offset, offset, Color_Shadow);
+        Mix_Image_Color_NoBG(&Img_Tmp, &Img_Char[size][*c], x + offset, offset, B_Color_Shadow);
         x += Img_Char[size][*c].w;
         c++;
     }
     c = Logo;
     x = 0;
     while (*c != ' ') {
-        Mix_Image_Color(&Img_Tmp, &Img_Char[size][*c], x, 0, Color_Red);
+        Mix_Image_Color(&Img_Tmp, &Img_Char[size][*c], x, 0, B_Color_Red);
         x += Img_Char[size][*c].w;
         c++;
     }
     x += Img_Char[size][*c].w;
     c++;
     while (*c != '\0') {
-        Mix_Image_Color(&Img_Tmp, &Img_Char[size][*c], x, 0, Color_Blue);
+        Mix_Image_Color(&Img_Tmp, &Img_Char[size][*c], x, 0, B_Color_Blue);
         x += Img_Char[size][*c].w;
         c++;
     }
@@ -80,7 +80,7 @@ void Create_Image_Font(Image *Img, char Text[], int size, unsigned char Color[])
     c = Text;
     x = 0;
     while (*c != '\0') {
-        Mix_Image_Color_NoBG(Img, &Img_Char[size][*c], x + offset, offset, Color_Shadow);
+        Mix_Image_Color_NoBG(Img, &Img_Char[size][*c], x + offset, offset, B_Color_Shadow);
         x += Img_Char[size][*c].w;
         c++;
     }

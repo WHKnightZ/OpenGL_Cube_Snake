@@ -3,6 +3,7 @@
 
 #include <GL/freeglut.h>
 #include <GL/glext.h>
+#include <SDL2/SDL_mixer.h>
 #include <time.h>
 
 #include "../Library/loadpng.h"
@@ -154,6 +155,9 @@ void Draw_Face_Bottom();
 void Draw_Face_Back();
 void Translate_Offset(s_Snake_Pos *s);
 
+// sound.h
+void Init_Sound();
+
 // Function_Pointer
 
 void (*Game_Display_Func[])() = {Game_Display_Idle, Game_Display_Prepare, Game_Display_Play, Game_Display_Dead, Game_Display_GameOver};
@@ -170,17 +174,24 @@ void (*Arrow_Func[])() = {Arrow_Up, Arrow_Right, Arrow_Down, Arrow_Left};
 
 s_Face Face[6];
 
-const GLfloat BG_Color[] = {0.275f, 0.784f, 0.827f, 1.0f};
-const GLfloat Light_Pos[] = {-27.0f, 25.0f, 29.0f, 0.0f};
-const GLfloat Light_Pos2[] = {27.0f, -25.0f, -29.0f, 0.0f};
+const GLfloat BG_Color[] = {0.275f, 0.784f, 0.827f, 0.0f};
+const GLfloat Light_Pos[] = {-20.0f, 18.0f, 22.0f, 0.0f};   // -27, 25, 29
+const GLfloat Light_Pos2[] = {20.0f, -18.0f, -22.0f, 0.0f}; // 27, -25, -29
 const GLfloat Light_Dif[] = {1.0f, 1.0f, 1.0f, 1.0f};
-const GLfloat Ambient[] = {0.400f, 0.900f, 0.400f, 1.0f}; // 4 9 2
-const GLfloat Specular[] = {1.000f, 1.000f, 1.000f, 1.0f};
-const GLfloat Diffuse_Cube[] = {0.200f, 0.980f, 0.300f, 1.0f};
-const GLfloat Diffuse_Wall[] = {0.110f, 0.537f, 1.000f, 1.0f};
-const GLfloat Diffuse_Food[] = {1.000f, 0.792f, 0.278f, 1.0f};
-const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
-const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
+//const GLfloat Ambient[] = {0.400f, 0.900f, 0.400f, 1.0f};
+//const GLfloat Specular[] = {1.000f, 1.000f, 1.000f, 1.0f};
+//const GLfloat Diffuse_Cube[] = {0.200f, 0.980f, 0.300f, 1.0f};
+//const GLfloat Diffuse_Wall[] = {0.110f, 0.537f, 1.000f, 1.0f};
+//const GLfloat Diffuse_Food[] = {1.000f, 0.792f, 0.278f, 1.0f};
+//const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
+//const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
+const float F_Color_White[] = {1.000f, 1.000f, 1.000f};
+const float F_Color_Cube[] = {0.306f, 1.000f, 0.476f};
+const float F_Color_Wall[] = {0.110f, 0.533f, 1.000f};
+const float F_Color_Food[] = {1.000f, 1.000f, 0.318f};
+const float F_Color_Snake[] = {0.800f, 0.184f, 0.280f};
+const float F_Color_Snake_Head[] = {1.000f, 0.184f, 0.180f};
+
 const float x_angle = 16.0f, y_angle = 0.0f, z_angle = 0.0f;
 
 int New_V, New_Drt;
@@ -218,18 +229,29 @@ Image Img_Logo, Img_PressAnyKey, Img_GameOver, Img_Prepare[3];
 Rect Rct_Logo, Rct_PressAnyKey, Rct_GameOver, Rct_Prepare[3];
 
 int Font_Offset_Shadow[] = {4, 6, 8};
-unsigned char Color_Shadow[] = {0, 0, 0, 192};
-unsigned char Color_Red[] = {255, 90, 70, 255};
-unsigned char Color_Blue[] = {50, 135, 220, 255};
-unsigned char Color_White[] = {255, 255, 255, 255};
+unsigned char B_Color_Shadow[] = {0, 0, 0, 192}; // B means byte
+unsigned char B_Color_Red[] = {255, 90, 70, 255};
+unsigned char B_Color_Blue[] = {50, 135, 220, 255};
+unsigned char B_Color_White[] = {255, 255, 255, 255};
 
 int Score, Score_Array[3], Score_Length;
 float Score_Start_X, Score_Start_Y;
 Rect Rct_Score;
+int Score_Animate_Stt, Score_Is_Animate;
+float Score_Animate_Offset[10];
+
+// sound.h
+
+Mix_Music *Music_Background = NULL;
+Mix_Chunk *Sound_Play = NULL;
+Mix_Chunk *Sound_Food = NULL;
+Mix_Chunk *Sound_Switch = NULL;
+Mix_Chunk *Sound_Dead = NULL;
 
 #include "afunc.c"
 #include "display.c"
 #include "font.c"
 #include "init.c"
+#include "sound.c"
 
 #endif

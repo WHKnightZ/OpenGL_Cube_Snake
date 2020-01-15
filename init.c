@@ -2,6 +2,7 @@
 
 void Switch() {
     if (Time_Rotate == MAX_TIME_ROTATE) {
+        Mix_PlayChannel(-1, Sound_Switch, 0);
         Time_Rotate = 0;
         Snake_Pos[0].V = New_V;
         Snake_Pos[0].Drt = New_Drt;
@@ -135,7 +136,9 @@ void Reload_Game() {
     Set_Offset_Func[Face[Face_Current].f][Face[Face_Next].f]();
     Init_Food();
     Score_Start_Y = POS_SCORE;
-    Score = 10;
+    Score = 0;
+    Score_Animate_Stt = 0;
+    Score_Is_Animate = 0;
     Update_Score(0);
 }
 
@@ -148,8 +151,9 @@ void Init_Game() {
     glEnable(GL_LIGHT1);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Light_Dif);
     glLightfv(GL_LIGHT1, GL_POSITION, Light_Pos2);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
+    glEnable(GL_COLOR_MATERIAL);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
     glMaterialf(GL_FRONT, GL_SHININESS, 90.0f);
     glClearColor(BG_Color[0], BG_Color[1], BG_Color[2], BG_Color[3]);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -164,7 +168,6 @@ void Init_Game() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glShadeModel(GL_POLYGON_SMOOTH);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glEnable(GL_DEPTH_TEST);
     // GL - 2D Texture
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -185,16 +188,21 @@ void Init_Game() {
     Face[FACE_BACK].d = -1;
     Init_Font();
     Create_Image_Logo();
-    Create_Image_Font(&Img_PressAnyKey, "Press Any Key", SMALL, Color_White);
+    Create_Image_Font(&Img_PressAnyKey, "Press Any Key", SMALL, B_Color_White);
     Create_Rect_Image(&Rct_PressAnyKey, &Img_PressAnyKey, (WIDTH - Img_PressAnyKey.w) / 2.0f, POS_PRESSANYKEY);
-    Create_Image_Font(&Img_GameOver, "Game Over", LARGE, Color_Red);
+    Create_Image_Font(&Img_GameOver, "Game Over", LARGE, B_Color_Red);
     Create_Rect_Image(&Rct_GameOver, &Img_GameOver, (WIDTH - Img_GameOver.w) / 2.0f, POS_GAMEOVER);
-    Create_Image_Font(&Img_Prepare[0], "3 . . .", MEDIUM, Color_White);
-    Create_Image_Font(&Img_Prepare[1], "2 . . .", MEDIUM, Color_White);
-    Create_Image_Font(&Img_Prepare[2], "1 . . .", MEDIUM, Color_White);
+    Create_Image_Font(&Img_Prepare[0], "3 . . .", MEDIUM, B_Color_White);
+    Create_Image_Font(&Img_Prepare[1], "2 . . .", MEDIUM, B_Color_White);
+    Create_Image_Font(&Img_Prepare[2], "1 . . .", MEDIUM, B_Color_White);
     int i;
     for (i = 0; i < 3; i++)
         Create_Rect_Image(&Rct_Prepare[i], &Img_Prepare[i], (WIDTH - Img_Prepare[i].w) / 2.0f, POS_PREPARE);
     Load_Map();
     Reload_Game();
+    for (i = 0; i < 5; i++)
+        Score_Animate_Offset[i] = -i * 8.0f;
+    for (i = 5; i < 10; i++)
+        Score_Animate_Offset[i] = (i - 10) * 8.0f;
+    Init_Sound();
 }
