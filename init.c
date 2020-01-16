@@ -143,37 +143,8 @@ void Reload_Game() {
 }
 
 void Init_Game() {
-    // GL - 3D
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, Light_Dif);
-    glLightfv(GL_LIGHT0, GL_POSITION, Light_Pos);
-    glEnable(GL_LIGHT1);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, Light_Dif);
-    glLightfv(GL_LIGHT1, GL_POSITION, Light_Pos2);
-    glEnable(GL_COLOR_MATERIAL);
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
-    glMaterialf(GL_FRONT, GL_SHININESS, 90.0f);
-    glClearColor(BG_Color[0], BG_Color[1], BG_Color[2], BG_Color[3]);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_POINT_SMOOTH);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glEnable(GL_POLYGON_SMOOTH);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glShadeModel(GL_POLYGON_SMOOTH);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // GL - 2D Texture
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    srand(time(NULL));
     // Game
-    Reset_View();
     Face[FACE_FRONT].f = 2;
     Face[FACE_FRONT].d = 1;
     Face[FACE_LEFT].f = 0;
@@ -205,4 +176,36 @@ void Init_Game() {
     for (i = 5; i < 10; i++)
         Score_Animate_Offset[i] = (i - 10) * 8.0f;
     Init_Sound();
+}
+
+void Init_GL() {
+    // GL - 3D
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, Light_Dif);
+    glLightfv(GL_LIGHT0, GL_POSITION, Light_Pos);
+    glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, Light_Dif);
+    glLightfv(GL_LIGHT1, GL_POSITION, Light_Pos2);
+    glEnable(GL_COLOR_MATERIAL);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
+    glMaterialf(GL_FRONT, GL_SHININESS, 90.0f);
+    glClearColor(BG_Color[0], BG_Color[1], BG_Color[2], BG_Color[3]);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_POINT_SMOOTH);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_POLYGON_SMOOTH);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glShadeModel(GL_POLYGON_SMOOTH);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // GL - 2D Texture
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }

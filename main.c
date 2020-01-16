@@ -49,7 +49,7 @@ void Timer(int value) {
 }
 
 int main(int argc, char **argv) {
-    srand(time(NULL));
+    Init_Game();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glEnable(GL_MULTISAMPLE);
@@ -60,11 +60,12 @@ int main(int argc, char **argv) {
     glutInitWindowPosition(POS_X, POS_Y);
     glutInitWindowSize(WIDTH, HEIGHT);
     glutCreateWindow("Snake Cube");
-    Init_Game();
+    Init_GL();
+    Reset_View();
     glutKeyboardFunc(Keyboard);
     glutTimerFunc(0, Timer, 0);
     glutDisplayFunc(Display);
-    //    glutReshapeFunc(Resize);
+    //	glutReshapeFunc(Resize);
     glutMainLoop();
     return 0;
 }

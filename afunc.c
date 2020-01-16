@@ -248,13 +248,7 @@ void Game_Process_Play() {
         }
     }
     Snake_Offset++;
-    if (Snake_Offset == Offset_Time) {
-        Snake_Offset = 0;
-        int i;
-        for (i = Snake_Length; i > 0; i--) {
-            Snake_Pos[i] = Snake_Pos[i - 1];
-        }
-        Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
+    if (Snake_Offset == 1) {
         s_Vec3 *Vec3_Ptr = &Map_Velocity[Snake_Pos[0].V];
         int Next_x = Snake_Pos[0].x + Snake_Pos[0].Drt * Vec3_Ptr->x;
         int Next_y = Snake_Pos[0].y + Snake_Pos[0].Drt * Vec3_Ptr->y;
@@ -264,6 +258,14 @@ void Game_Process_Play() {
             Game_Timer = 0;
             Game_Stt = GAME_STT_DEAD;
         }
+    }
+    if (Snake_Offset == Offset_Time) {
+        Snake_Offset = 0;
+        int i;
+        for (i = Snake_Length; i > 0; i--) {
+            Snake_Pos[i] = Snake_Pos[i - 1];
+        }
+        Move_Func[Snake_Pos[0].V](Snake_Pos[0].Drt);
         int n = Check_Is_Food(Snake_Pos[0].x, Snake_Pos[0].y, Snake_Pos[0].z);
         if (n >= 0) {
             Mix_PlayChannel(-1, Sound_Food, 0);
@@ -273,7 +275,8 @@ void Game_Process_Play() {
             Add_Part();
         }
         if (Pressed_Arrow != -1 && Time_Rotate == MAX_TIME_ROTATE) {
-            Arrow_Func[Pressed_Arrow]();
+            if ((Key_Current + Pressed_Arrow) % 2 == 1)
+                Arrow_Func[Pressed_Arrow]();
             Pressed_Arrow = -1;
         }
     }

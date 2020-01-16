@@ -4,7 +4,7 @@ void Reset_View() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glViewport(0, 0, WIDTH, HEIGHT);
-    gluPerspective(20.0, 1.0, 1.0, 150.0);
+    gluPerspective(19.0, 1.0, 1.0, 150.0);
     glTranslatef(0.0f, 0.0f, -94.0f);
     glRotatef(x_angle, 1.0f, 0.0f, 0.0f);
     glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
@@ -22,6 +22,14 @@ void Reload_View() {
 
 void Draw_Game() {
     int i, j;
+    //    for (i = 1; i < 19; i++) {
+    //        glBegin(GL_LINES);
+    //        glVertex3f(-9.0f, i - 9.0f, 9.1f);
+    //        glVertex3f(9.0f, i - 9.0f, 9.1f);
+    //        glVertex3f(i - 9.0f, -9.0f, 9.1f);
+    //        glVertex3f(i - 9.0f, 9.0f, 9.1f);
+    //        glEnd();
+    //    }
     //    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse_Cube);
     glColor3fv(F_Color_Cube);
     glutSolidCube(18.0);

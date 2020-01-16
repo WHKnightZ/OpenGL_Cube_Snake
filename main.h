@@ -140,6 +140,7 @@ void Create_Food(int n);
 void Init_Food();
 void Reload_Game();
 void Init_Game();
+void Init_GL();
 
 // display.h
 void Reset_View();
@@ -186,9 +187,9 @@ const GLfloat Light_Dif[] = {1.0f, 1.0f, 1.0f, 1.0f};
 //const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
 //const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
 const float F_Color_White[] = {1.000f, 1.000f, 1.000f};
-const float F_Color_Cube[] = {0.306f, 1.000f, 0.476f};
+const float F_Color_Cube[] = {0.276f, 1.000f, 0.476f};
 const float F_Color_Wall[] = {0.110f, 0.533f, 1.000f};
-const float F_Color_Food[] = {1.000f, 1.000f, 0.318f};
+const float F_Color_Food[] = {0.950f, 0.950f, 0.288f};
 const float F_Color_Snake[] = {0.800f, 0.184f, 0.280f};
 const float F_Color_Snake_Head[] = {1.000f, 0.184f, 0.180f};
 
