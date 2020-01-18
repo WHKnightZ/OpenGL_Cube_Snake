@@ -187,9 +187,9 @@ const GLfloat Light_Dif[] = {1.0f, 1.0f, 1.0f, 1.0f};
 //const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
 //const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
 const float F_Color_White[] = {1.000f, 1.000f, 1.000f};
-const float F_Color_Cube[] = {0.276f, 1.000f, 0.476f};
+const float F_Color_Cube[] = {0.276f, 1.000f, 0.426f};
 const float F_Color_Wall[] = {0.110f, 0.533f, 1.000f};
-const float F_Color_Food[] = {0.950f, 0.950f, 0.288f};
+const float F_Color_Food[] = {0.950f, 0.950f, 0.309f};
 const float F_Color_Snake[] = {0.800f, 0.184f, 0.280f};
 const float F_Color_Snake_Head[] = {1.000f, 0.184f, 0.180f};
 
@@ -230,9 +230,9 @@ Image Img_Logo, Img_PressAnyKey, Img_GameOver, Img_Prepare[3];
 Rect Rct_Logo, Rct_PressAnyKey, Rct_GameOver, Rct_Prepare[3];
 
 int Font_Offset_Shadow[] = {4, 6, 8};
-unsigned char B_Color_Shadow[] = {0, 0, 0, 192}; // B means byte
+unsigned char B_Color_Shadow[] = {0, 0, 0, 198}; // B means byte
 unsigned char B_Color_Red[] = {255, 90, 70, 255};
-unsigned char B_Color_Blue[] = {50, 135, 220, 255};
+unsigned char B_Color_Blue[] = {50, 110, 210, 255};
 unsigned char B_Color_White[] = {255, 255, 255, 255};
 
 int Score, Score_Array[3], Score_Length;
