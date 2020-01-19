@@ -176,22 +176,25 @@ void (*Arrow_Func[])() = {Arrow_Up, Arrow_Right, Arrow_Down, Arrow_Left};
 s_Face Face[6];
 
 const GLfloat BG_Color[] = {0.275f, 0.784f, 0.827f, 0.0f};
-const GLfloat Light_Pos[] = {-20.0f, 18.0f, 22.0f, 0.0f};   // -27, 25, 29
-const GLfloat Light_Pos2[] = {20.0f, -18.0f, -22.0f, 0.0f}; // 27, -25, -29
+const GLfloat Light_Pos[] = {-21.0f, 19.0f, 24.0f, 0.0f};   // -27, 25, 29
+const GLfloat Light_Pos2[] = {21.5f, -19.0f, -24.0f, 0.0f}; // 27, -25, -29
 const GLfloat Light_Dif[] = {1.0f, 1.0f, 1.0f, 1.0f};
-//const GLfloat Ambient[] = {0.400f, 0.900f, 0.400f, 1.0f};
-//const GLfloat Specular[] = {1.000f, 1.000f, 1.000f, 1.0f};
-//const GLfloat Diffuse_Cube[] = {0.200f, 0.980f, 0.300f, 1.0f};
-//const GLfloat Diffuse_Wall[] = {0.110f, 0.537f, 1.000f, 1.0f};
-//const GLfloat Diffuse_Food[] = {1.000f, 0.792f, 0.278f, 1.0f};
-//const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
-//const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
-const float F_Color_White[] = {1.000f, 1.000f, 1.000f};
-const float F_Color_Cube[] = {0.276f, 1.000f, 0.426f};
+
+/* use Ambient, Specular, Diffuse light but I don't use them anymore, replace by color material
+const GLfloat Ambient[] = {0.400f, 0.900f, 0.400f, 1.0f};
+const GLfloat Specular[] = {1.000f, 1.000f, 1.000f, 1.0f};
+const GLfloat Diffuse_Cube[] = {0.200f, 0.980f, 0.300f, 1.0f};
+const GLfloat Diffuse_Wall[] = {0.110f, 0.537f, 1.000f, 1.0f};
+const GLfloat Diffuse_Food[] = {1.000f, 0.792f, 0.278f, 1.0f};
+const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
+const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
+*/
+const float F_Color_White[] = {1.000f, 1.000f, 1.000f}; // F means float, save RGBA by float array
+const float F_Color_Cube[] = {0.276f, 1.000f, 0.496f};
 const float F_Color_Wall[] = {0.110f, 0.533f, 1.000f};
-const float F_Color_Food[] = {0.950f, 0.950f, 0.309f};
-const float F_Color_Snake[] = {0.800f, 0.184f, 0.280f};
-const float F_Color_Snake_Head[] = {1.000f, 0.184f, 0.180f};
+const float F_Color_Food[] = {0.950f, 0.940f, 0.305f};
+const float F_Color_Snake[] = {0.800f, 0.200f, 0.280f};
+const float F_Color_Snake_Head[] = {1.000f, 0.190f, 0.210f};
 
 const float x_angle = 16.0f, y_angle = 0.0f, z_angle = 0.0f;
 
@@ -230,7 +233,7 @@ Image Img_Logo, Img_PressAnyKey, Img_GameOver, Img_Prepare[3];
 Rect Rct_Logo, Rct_PressAnyKey, Rct_GameOver, Rct_Prepare[3];
 
 int Font_Offset_Shadow[] = {4, 6, 8};
-unsigned char B_Color_Shadow[] = {0, 0, 0, 198}; // B means byte
+unsigned char B_Color_Shadow[] = {0, 0, 0, 220}; // B means byte, save RGBA by byte array
 unsigned char B_Color_Red[] = {255, 90, 70, 255};
 unsigned char B_Color_Blue[] = {50, 110, 210, 255};
 unsigned char B_Color_White[] = {255, 255, 255, 255};
@@ -249,6 +252,7 @@ Mix_Chunk *Sound_Food = NULL;
 Mix_Chunk *Sound_Switch = NULL;
 Mix_Chunk *Sound_Dead = NULL;
 
+// including all referenced .c files, you don't need to compile all of them
 #include "afunc.c"
 #include "display.c"
 #include "font.c"

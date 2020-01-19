@@ -188,8 +188,8 @@ void Init_GL() {
     glLightfv(GL_LIGHT1, GL_DIFFUSE, Light_Dif);
     glLightfv(GL_LIGHT1, GL_POSITION, Light_Pos2);
     glEnable(GL_COLOR_MATERIAL);
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
     glMaterialf(GL_FRONT, GL_SHININESS, 90.0f);
     glClearColor(BG_Color[0], BG_Color[1], BG_Color[2], BG_Color[3]);
     glColor3f(1.0f, 1.0f, 1.0f);
