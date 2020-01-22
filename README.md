@@ -30,7 +30,7 @@ v0.1
 - The colors are probably not very good, but I will update later
 
 v0.2
-- Update color
+- Update color, sound
 
 ## Youtube:
 

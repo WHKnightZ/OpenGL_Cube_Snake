@@ -177,7 +177,7 @@ s_Face Face[6];
 
 const GLfloat BG_Color[] = {0.275f, 0.784f, 0.827f, 0.0f};
 const GLfloat Light_Pos[] = {-21.0f, 19.0f, 24.0f, 0.0f};   // -27, 25, 29
-const GLfloat Light_Pos2[] = {21.5f, -19.0f, -24.0f, 0.0f}; // 27, -25, -29
+const GLfloat Light_Pos2[] = {21.0f, -19.0f, -24.0f, 0.0f}; // 27, -25, -29
 const GLfloat Light_Dif[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
 /* use Ambient, Specular, Diffuse light but I don't use them anymore, replace by color material
@@ -190,9 +190,9 @@ const GLfloat Diffuse_Snake[] = {0.800f, 0.184f, 0.280f, 1.0f};
 const GLfloat Diffuse_Snake_Head[] = {1.000f, 0.184f, 0.180f, 1.0f};
 */
 const float F_Color_White[] = {1.000f, 1.000f, 1.000f}; // F means float, save RGBA by float array
-const float F_Color_Cube[] = {0.276f, 1.000f, 0.496f};
+const float F_Color_Cube[] = {0.276f, 1.000f, 0.506f};
 const float F_Color_Wall[] = {0.110f, 0.533f, 1.000f};
-const float F_Color_Food[] = {0.950f, 0.940f, 0.305f};
+const float F_Color_Food[] = {1.000f, 1.000f, 0.335f};
 const float F_Color_Snake[] = {0.800f, 0.200f, 0.280f};
 const float F_Color_Snake_Head[] = {1.000f, 0.190f, 0.210f};
 
